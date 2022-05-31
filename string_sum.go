@@ -2,6 +2,9 @@ package string_sum
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
@@ -23,5 +26,54 @@ var (
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
 func StringSum(input string) (output string, err error) {
-	return "", nil
+	input = strings.TrimSpace(input)
+
+	if len(input) == 0 {
+		return "", fmt.Errorf("nothing to parse: %w", errorEmptyInput)
+	}
+
+	sum := 0
+	operandsCount := 0
+	k := 1
+
+	for i := 0; i < len(input); {
+		if input[i] == '-' {
+			k *= -1
+			i++
+		} else if input[i] == '+' || input[i] == ' ' {
+			i++
+		} else {
+			// check if current symbol is a digit
+			_, err := strconv.Atoi(input[i : i+1])
+			if err != nil {
+				return "", fmt.Errorf("invalid input expression: %w", err)
+			}
+
+			// find the end of the number
+			j := i
+			for j < len(input) && err == nil {
+				j++
+				_, err = strconv.Atoi(input[j:j])
+			}
+
+			// convert string number to int
+			n, err := strconv.Atoi(input[i:j])
+			if err != nil {
+				return "", fmt.Errorf("could not convert to int: %w", err)
+			}
+
+			sum += k * n
+			operandsCount++
+			k = 1
+
+			i = j
+		}
+	}
+
+	if operandsCount != 2 {
+		return "", fmt.Errorf("invalid number of operands: %w", errorNotTwoOperands)
+	}
+
+	output = strconv.Itoa(sum)
+	return output, nil
 }
