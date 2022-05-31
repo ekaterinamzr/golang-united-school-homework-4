@@ -51,9 +51,12 @@ func StringSum(input string) (output string, err error) {
 
 			// find the end of the number
 			j := i
-			for j < len(input) && err == nil {
+			for j < len(input)-1 && err == nil {
 				j++
-				_, err = strconv.Atoi(input[j:j])
+				_, err = strconv.Atoi(input[j : j+1])
+			}
+			if j == len(input)-1 && err == nil {
+				j++
 			}
 
 			// convert string number to int
